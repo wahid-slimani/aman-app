@@ -2,7 +2,15 @@
 
 import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
-import { MapCanvas } from "@/features/map/components/map-canvas";
+import dynamic from "next/dynamic";
+
+const MapCanvas = dynamic(
+  () => import("@/features/map/components/map-canvas").then((module) => module.MapCanvas),
+  {
+    ssr: false,
+    loading: () => <div className="h-[360px] w-full animate-pulse rounded-lg bg-slate-200" />
+  }
+);
 
 type Point = {
   id: string;

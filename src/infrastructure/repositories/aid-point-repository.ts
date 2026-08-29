@@ -47,6 +47,7 @@ export async function findNearbyAidPoints(input: {
 export async function getAidPointByPublicSlug(slug: string) {
   return prisma.aidPoint.findFirst({
     where: {
+      publicationStatus: "PUBLISHED",
       OR: [{ publicSlug: slug }, { id: slug }]
     },
     include: {

@@ -1,6 +1,6 @@
 # Active Phase Control
 
-Current phase: `PHASE_04_SEO_PERFORMANCE_HARDENING`
+Current phase: `PHASE_05_SECURITY_RELEASE_HARDENING`
 
 Status:
 - state: READY_TO_START
