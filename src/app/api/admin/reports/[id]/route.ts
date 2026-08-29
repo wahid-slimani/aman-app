@@ -4,6 +4,8 @@ import { resolveLocale } from "@/lib/api/locale";
 import { requireRole } from "@/lib/security/authorization";
 import { prisma } from "@/infrastructure/database/prisma";
 import { reportReviewSchema } from "@/lib/validation/schemas";
+import { trackAnalyticsEvent } from "@/domain/analytics/service";
+import { AnalyticsEventType } from "@prisma/client";
 
 type RouteContext = {
   params: Promise<{
@@ -61,6 +63,18 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     });
 
     return report;
+  });
+
+  await trackAnalyticsEvent({
+    type: AnalyticsEventType.REPORT_REVIEWED,
+    source: "admin",
+    locale,
+    userRole: "SUPER_ADMIN",
+    userId: access.auth.sub,
+    aidPointId: updated.aidPointId,
+    payload: {
+      status: updated.status
+    }
   });
 
   return apiSuccess({

@@ -8,6 +8,8 @@ import {
   ACCESS_TOKEN_TTL_SECONDS,
   REFRESH_TOKEN_TTL_SECONDS
 } from "@/lib/constants/app";
+import { trackAnalyticsEvent } from "@/domain/analytics/service";
+import { AnalyticsEventType } from "@prisma/client";
 
 export async function POST(request: NextRequest) {
   const locale = resolveLocale(request.headers.get("accept-language"));
@@ -22,6 +24,14 @@ export async function POST(request: NextRequest) {
   if (!result.ok) {
     return apiError({ code: result.reason, messageKey: "auth.refreshInvalid", status: 401 }, locale);
   }
+
+  await trackAnalyticsEvent({
+    type: AnalyticsEventType.AUTH_REFRESH_SUCCESS,
+    source: "api",
+    locale,
+    userRole: result.user.role,
+    userId: result.user.id
+  });
 
   const response = apiSuccess({ refreshed: true });
 

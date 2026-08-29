@@ -5,6 +5,8 @@ import { apiError, apiSuccess } from "@/lib/api/response";
 import { requireRole } from "@/lib/security/authorization";
 import { publicationSubmitSchema } from "@/lib/validation/schemas";
 import { checkPublicationPrerequisites } from "@/domain/operational-quality/workflows";
+import { trackAnalyticsEvent } from "@/domain/analytics/service";
+import { AnalyticsEventType } from "@prisma/client";
 
 type RouteContext = {
   params: Promise<{
@@ -112,6 +114,15 @@ export async function POST(request: NextRequest, context: RouteContext) {
   if (!updated) {
     return apiError({ code: "VERSION_CONFLICT", messageKey: "common.versionConflict", status: 409 }, locale);
   }
+
+  await trackAnalyticsEvent({
+    type: AnalyticsEventType.AID_POINT_PUBLICATION_SUBMITTED,
+    source: "organiser",
+    locale,
+    userRole: "ORGANISER",
+    userId: access.auth.sub,
+    aidPointId: updated.id
+  });
 
   return apiSuccess(updated);
 }

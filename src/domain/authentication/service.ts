@@ -165,7 +165,11 @@ export async function refreshSession(refreshToken: string) {
   return {
     ok: true as const,
     accessToken,
-    refreshToken: nextRefresh
+    refreshToken: nextRefresh,
+    user: {
+      id: oldSession.user.id,
+      role: oldSession.user.role
+    }
   };
 }
 

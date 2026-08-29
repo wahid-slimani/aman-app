@@ -48,6 +48,18 @@ enum DatasetChangeAction {
   UPDATE_STATUS
 }
 
+enum AnalyticsEventType {
+  AUTH_LOGIN_SUCCESS
+  AUTH_REFRESH_SUCCESS
+  REPORT_SUBMITTED
+  AID_POINT_NEARBY_SEARCH
+  AID_POINT_VERIFIED
+  AID_POINT_PUBLICATION_SUBMITTED
+  AID_POINT_PUBLISHED
+  AID_POINT_ARCHIVED
+  REPORT_REVIEWED
+}
+
 model User {
   id             String           @id @default(cuid())
   username       String           @unique
@@ -64,6 +76,7 @@ model User {
   reviewedReports AidPointReport[] @relation("ReportReviewer")
   verifications   AidPointVerification[]
   datasetVersions DatasetVersion[]
+  analyticsEvents AnalyticsEvent[]
 }
 
 model RefreshSession {
@@ -118,6 +131,7 @@ model AidPoint {
   reports            AidPointReport[]
   verifications      AidPointVerification[]
   datasetChanges     DatasetChange[]
+  analyticsEvents    AnalyticsEvent[]
 
   @@index([organiserId])
   @@index([publicationStatus, operationalStatus])
@@ -217,4 +231,39 @@ model DatasetChange {
 
   @@index([datasetVersionId])
   @@index([aidPointId, createdAt])
+}
+
+model AnalyticsEvent {
+  id         String             @id @default(cuid())
+  type       AnalyticsEventType
+  source     String
+  locale     String?
+  userRole   UserRole?
+  userId     String?
+  aidPointId String?
+  wilaya     String?
+  eventDate  DateTime
+  payload    Json?
+  createdAt  DateTime           @default(now())
+  user       User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  aidPoint   AidPoint?          @relation(fields: [aidPointId], references: [id], onDelete: SetNull)
+
+  @@index([type, eventDate])
+  @@index([source, eventDate])
+  @@index([userRole, eventDate])
+  @@index([wilaya, eventDate])
+}
+
+model AnalyticsAggregate {
+  id          String   @id @default(cuid())
+  metricKey   String
+  bucketDate  DateTime
+  period      String
+  dimension   String
+  value       Int
+  updatedAt   DateTime @updatedAt
+
+  @@unique([metricKey, bucketDate, period, dimension])
+  @@index([period, bucketDate])
+  @@index([metricKey, period, bucketDate])
 }

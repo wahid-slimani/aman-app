@@ -6,6 +6,8 @@ import { apiError, apiSuccess } from "@/lib/api/response";
 import { requireRole } from "@/lib/security/authorization";
 import { publicationReviewSchema } from "@/lib/validation/schemas";
 import { checkPublicationPrerequisites, createDatasetVersionChange } from "@/domain/operational-quality/workflows";
+import { trackAnalyticsEvent } from "@/domain/analytics/service";
+import { AnalyticsEventType } from "@prisma/client";
 
 type RouteContext = {
   params: Promise<{
@@ -98,6 +100,28 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
     return updated;
   });
+
+  if (parsed.data.action === "PUBLISH") {
+    await trackAnalyticsEvent({
+      type: AnalyticsEventType.AID_POINT_PUBLISHED,
+      source: "admin",
+      locale,
+      userRole: "SUPER_ADMIN",
+      userId: access.auth.sub,
+      aidPointId: result.id
+    });
+  }
+
+  if (parsed.data.action === "ARCHIVE") {
+    await trackAnalyticsEvent({
+      type: AnalyticsEventType.AID_POINT_ARCHIVED,
+      source: "admin",
+      locale,
+      userRole: "SUPER_ADMIN",
+      userId: access.auth.sub,
+      aidPointId: result.id
+    });
+  }
 
   return apiSuccess({
     id: result.id,

@@ -4,6 +4,8 @@ import { apiError, apiSuccess } from "@/lib/api/response";
 import { resolveLocale } from "@/lib/api/locale";
 import { isRateLimited } from "@/lib/api/rate-limit";
 import { listNearbyAidPoints } from "@/domain/aid-points/service";
+import { trackAnalyticsEvent } from "@/domain/analytics/service";
+import { AnalyticsEventType } from "@prisma/client";
 
 export async function GET(request: NextRequest) {
   const locale = resolveLocale(request.headers.get("accept-language"));
@@ -27,6 +29,16 @@ export async function GET(request: NextRequest) {
     latitude: parsed.data.latitude,
     longitude: parsed.data.longitude,
     radiusKm: parsed.data.radius
+  });
+
+  await trackAnalyticsEvent({
+    type: AnalyticsEventType.AID_POINT_NEARBY_SEARCH,
+    source: "web",
+    locale,
+    payload: {
+      radiusKm: parsed.data.radius,
+      resultCount: points.length
+    }
   });
 
   return apiSuccess(points);

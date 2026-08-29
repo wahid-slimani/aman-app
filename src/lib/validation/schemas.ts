@@ -62,3 +62,19 @@ export const verificationThresholdSchema = z
     message: "validation.invalidThresholds",
     path: ["criticalDays"]
   });
+
+export const analyticsEventSchema = z.object({
+  type: z.string().min(3).max(80),
+  source: z.enum(["api", "web", "admin", "organiser"]),
+  locale: z.string().min(2).max(16).optional(),
+  userRole: z.enum(["SUPER_ADMIN", "ORGANISER"]).optional(),
+  aidPointId: z.string().min(3).max(64).optional(),
+  wilaya: z.string().min(2).max(120).optional(),
+  payload: z.record(z.string(), z.unknown()).optional()
+});
+
+export const analyticsRangeSchema = z.object({
+  range: z.enum(["today", "7d", "30d", "90d", "custom"]).default("30d"),
+  start: z.string().optional(),
+  end: z.string().optional()
+});

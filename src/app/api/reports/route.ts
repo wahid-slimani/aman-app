@@ -4,6 +4,8 @@ import { resolveLocale } from "@/lib/api/locale";
 import { submitReportSchema } from "@/lib/validation/schemas";
 import { isRateLimited } from "@/lib/api/rate-limit";
 import { prisma } from "@/infrastructure/database/prisma";
+import { trackAnalyticsEvent } from "@/domain/analytics/service";
+import { AnalyticsEventType } from "@prisma/client";
 
 export async function POST(request: NextRequest) {
   const locale = resolveLocale(request.headers.get("accept-language"));
@@ -41,6 +43,16 @@ export async function POST(request: NextRequest) {
       id: true,
       status: true,
       createdAt: true
+    }
+  });
+
+  await trackAnalyticsEvent({
+    type: AnalyticsEventType.REPORT_SUBMITTED,
+    source: "api",
+    locale,
+    aidPointId: parsed.data.aidPointId,
+    payload: {
+      reason: parsed.data.reason
     }
   });
 

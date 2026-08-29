@@ -1,11 +1,11 @@
 # Active Phase Control
 
-Current phase: `PHASE_03_ANALYTICS`
+Current phase: `PHASE_04_SEO_PERFORMANCE_HARDENING`
 
 Status:
 - state: READY_TO_START
-- startedAt: 2026-08-29
-- completedAt: 2026-08-29
+- startedAt: TBD
+- completedAt: TBD
 
 Rules:
 - Only requirements assigned to current phase may be implemented.
