@@ -5473,13 +5473,13 @@ The architecture also deliberately avoids overengineering: **one Next.js modular
 
 And one infrastructure issue should be resolved **before writing the application**: confirm that your shared PostgreSQL host actually allows **PostGIS** and permits secure external connections from Vercel. Without PostGIS, the geographic part of this exact design needs to change.
 
-[1]: https://www.npmjs.com/package/next?activeTab=versions&utm_source=chatgpt.com "next - npm"
-[2]: https://www.prisma.io/docs/orm/v7/prisma-client/using-raw-sql/safeql?utm_source=chatgpt.com "Integrate SafeQL with Prisma Client | Prisma Documentation"
-[3]: https://nextjs.org/learn/seo/metadata?utm_source=chatgpt.com "SEO: Metadata | Next.js"
-[4]: https://nextjs.org/learn/seo/xml-sitemaps?utm_source=chatgpt.com "SEO: XML Sitemaps | Next.js"
-[5]: https://nextjs.org/learn/seo/metatags?utm_source=chatgpt.com "SEO: Special Meta Tags for Search Engines | Next.js"
-[6]: https://nextjs.org/docs/app?utm_source=chatgpt.com "Next.js Docs: App Router | Next.js"
-[7]: https://nextjs.org/docs/app/getting-started/project-structure?utm_source=chatgpt.com "Getting Started: Project Structure | Next.js"
-[8]: https://www.prisma.io/docs/prisma-orm/quickstart/postgresql?utm_source=chatgpt.com "Quickstart: Prisma 8 with PostgreSQL | Prisma Documentation"
-[9]: https://redux-toolkit.js.org/tutorials/rtk-query?utm_source=chatgpt.com "RTK Query | Redux Toolkit"
-[10]: https://redux-toolkit.js.org/rtk-query/usage/queries?utm_source=chatgpt.com "Queries | Redux Toolkit"
+[1]: https://www.npmjs.com/package/next?activeTab=versions "next - npm"
+[2]: https://www.prisma.io/docs/orm/v7/prisma-client/using-raw-sql/safeql "Integrate SafeQL with Prisma Client | Prisma Documentation"
+[3]: https://nextjs.org/learn/seo/metadata "SEO: Metadata | Next.js"
+[4]: https://nextjs.org/learn/seo/xml-sitemaps "SEO: XML Sitemaps | Next.js"
+[5]: https://nextjs.org/learn/seo/metatags "SEO: Special Meta Tags for Search Engines | Next.js"
+[6]: https://nextjs.org/docs/app "Next.js Docs: App Router | Next.js"
+[7]: https://nextjs.org/docs/app/getting-started/project-structure "Getting Started: Project Structure | Next.js"
+[8]: https://www.prisma.io/docs/prisma-orm/quickstart/postgresql "Quickstart: Prisma 8 with PostgreSQL | Prisma Documentation"
+[9]: https://redux-toolkit.js.org/tutorials/rtk-query "RTK Query | Redux Toolkit"
+[10]: https://redux-toolkit.js.org/rtk-query/usage/queries "Queries | Redux Toolkit"
