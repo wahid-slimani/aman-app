@@ -11,6 +11,15 @@ Owner: <Copilot Session/Reviewer>
 - Not implemented items:
 - Justification (if any):
 
+## Task tracking closure
+
+- Task tracker file:
+- Total tasks:
+- Done:
+- Blocked (approved):
+- Open:
+- Closure evidence:
+
 ## Functional verification
 
 - Key flows tested:
@@ -40,6 +49,7 @@ Owner: <Copilot Session/Reviewer>
 - RTL/LTR behavior:
 - Loading/empty/error/success/disabled/validation states:
 - Design-system consistency:
+- UI/UX skill usage evidence (`ui-ux-pro-max`, `gpt-taste`, or approved fallback):
 
 ## Regression checks
 
@@ -50,6 +60,8 @@ Owner: <Copilot Session/Reviewer>
 
 - [ ] Pass - phase complete
 - [ ] Fail - remain in current phase
+
+Gate cannot pass unless task tracking closure and required UI/UX skill evidence are complete.
 
 ## Blockers (if fail)
 

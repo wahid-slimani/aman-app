@@ -10,11 +10,13 @@
 ## Standard execution loop per phase
 
 1. Load context and phase specification.
-2. Implement scope items.
-3. Run required tests/checks.
-4. Validate responsiveness, accessibility, localization, and security constraints.
-5. Complete phase verification template.
-6. Approve transition only if gate passes.
+2. Create or update the active phase task tracker from phase scope items.
+3. Implement scope items.
+4. Mark completed tasks with PRD references and evidence links.
+5. Run required tests/checks.
+6. Validate responsiveness, accessibility, localization, security constraints, and mandatory UI/UX skill usage.
+7. Complete phase verification template.
+8. Approve transition only if gate passes.
 
 ## Mandatory gate questions (all must pass)
 
@@ -23,9 +25,11 @@
 - Do required tests and checks pass?
 - Were regressions checked and resolved?
 - Is UI responsive and design-system compliant?
+- Were required UI/UX skills used and documented for UI work?
 - Are security requirements satisfied?
 - Does existing functionality still work?
 - Is phase DoD satisfied?
+- Are all active-phase tasks closed or formally blocked with approval?
 
 ## Failure policy
 
@@ -33,6 +37,13 @@ If any gate check fails:
 - phase remains active
 - missing/failing items are listed as blockers
 - transition is forbidden
+
+## Active-phase task tracking rule
+
+- Use `.github/phases/task-tracking-template.md` as the source format.
+- Task tracker must include: task ID, PRD references, owner, status, evidence.
+- Allowed statuses: TODO, IN_PROGRESS, BLOCKED, DONE.
+- `BLOCKED` status requires explicit blocker description and resolution plan.
 
 ## Change strategy
 

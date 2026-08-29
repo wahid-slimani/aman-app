@@ -23,3 +23,9 @@ This directory defines strict implementation phases.
 - Verification template: `../verification/phase-verification-template.md`
 - Final audit checklist: `../verification/final-audit-checklist.md`
 - Traceability matrix: `../context/traceability-matrix.md`
+- Task tracker template: `task-tracking-template.md`
+- Phase status log: `phase-status-log.md`
+
+## Skill usage requirement
+
+- UI-related phase tasks must follow `.github/engineering/skill-usage-policy.md`.

@@ -55,6 +55,12 @@ Must remain aligned with PRD:
 - Required states on every feature: loading, empty, error, success, disabled, validation.
 - Accessibility and RTL compliance are mandatory, not optional.
 
+## 6.1) Mandatory UI/UX skill usage lock
+
+- For all UI/UX implementation and redesign work, Copilot must apply `ui-ux-pro-max` and `gpt-taste` skill guidance.
+- If `gpt-taste` is not applicable for a specific screen type, fallback to `design-taste-frontend` while preserving PRD constraints.
+- UI work cannot pass phase gate without explicit skill-usage evidence in phase verification artifacts.
+
 ## 7) Testing and release lock
 
 - Unit, integration, and E2E coverage for critical flows.
@@ -86,3 +92,10 @@ A phase is complete only when:
 - no major regressions exist,
 - responsive + accessibility + security checks pass,
 - phase DoD and gate criteria are met.
+
+## 11) Task-level traceability discipline
+
+- Every implementation task must be tracked in the active phase task tracker.
+- No task may be silently deferred if it belongs to the active phase scope.
+- Each completed task must reference PRD item numbers and verification evidence.
+- Phase transition is blocked if any active-phase task remains open without approved blocker status.

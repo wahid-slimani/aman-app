@@ -6,6 +6,13 @@
 - Public map interaction speed and clarity take precedence over decorative complexity.
 - Admin and organiser dashboards must prioritize operational clarity.
 
+## Required UI/UX skills policy
+
+- Primary skills for UI work: `ui-ux-pro-max` and `gpt-taste`.
+- If `gpt-taste` is not appropriate for a specific task, use `design-taste-frontend` as fallback.
+- Skill usage must not override PRD requirements; PRD remains authoritative.
+- Each UI phase verification must include skill-usage evidence.
+
 ## Design system requirements
 
 Reusable components must include:
