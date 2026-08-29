@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { getCsrfTokenFromCookie } from "@/lib/security/csrf-client";
 
 type Dict = Record<string, string>;
 
@@ -65,7 +66,8 @@ export function OrganiserOpsPanel({
       const response = await fetch(`/api/organiser/aid-points/${point.id}/verify`, {
         method: "POST",
         headers: {
-          "content-type": "application/json"
+          "content-type": "application/json",
+          "x-csrf-token": getCsrfTokenFromCookie()
         },
         body: JSON.stringify({
           expectedVersion: point.version,
@@ -97,7 +99,8 @@ export function OrganiserOpsPanel({
       const response = await fetch(`/api/organiser/aid-points/${point.id}/publication`, {
         method: "POST",
         headers: {
-          "content-type": "application/json"
+          "content-type": "application/json",
+          "x-csrf-token": getCsrfTokenFromCookie()
         },
         body: JSON.stringify({
           expectedVersion: point.version,

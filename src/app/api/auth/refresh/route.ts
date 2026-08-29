@@ -4,12 +4,14 @@ import { resolveLocale } from "@/lib/api/locale";
 import { refreshSession } from "@/domain/authentication/service";
 import {
   ACCESS_COOKIE_NAME,
+  CSRF_COOKIE_NAME,
   REFRESH_COOKIE_NAME,
   ACCESS_TOKEN_TTL_SECONDS,
   REFRESH_TOKEN_TTL_SECONDS
 } from "@/lib/constants/app";
 import { trackAnalyticsEvent } from "@/domain/analytics/service";
 import { AnalyticsEventType } from "@prisma/client";
+import { createCsrfToken } from "@/lib/security/policy";
 
 export async function POST(request: NextRequest) {
   const locale = resolveLocale(request.headers.get("accept-language"));
@@ -34,6 +36,7 @@ export async function POST(request: NextRequest) {
   });
 
   const response = apiSuccess({ refreshed: true });
+  const csrfToken = createCsrfToken();
 
   response.cookies.set(ACCESS_COOKIE_NAME, result.accessToken, {
     httpOnly: true,
@@ -49,6 +52,14 @@ export async function POST(request: NextRequest) {
     sameSite: "strict",
     maxAge: REFRESH_TOKEN_TTL_SECONDS,
     path: "/api/auth"
+  });
+
+  response.cookies.set(CSRF_COOKIE_NAME, csrfToken, {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: ACCESS_TOKEN_TTL_SECONDS,
+    path: "/"
   });
 
   return response;

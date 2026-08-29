@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { getCsrfTokenFromCookie } from "@/lib/security/csrf-client";
 
 type Dict = Record<string, string>;
 
@@ -93,7 +94,8 @@ export function AdminOpsPanel({
       const response = await fetch("/api/admin/settings/verification-thresholds", {
         method: "PATCH",
         headers: {
-          "content-type": "application/json"
+          "content-type": "application/json",
+          "x-csrf-token": getCsrfTokenFromCookie()
         },
         body: JSON.stringify(thresholds)
       });
@@ -129,7 +131,8 @@ export function AdminOpsPanel({
       const response = await fetch(`/api/admin/reports/${reportId}`, {
         method: "PATCH",
         headers: {
-          "content-type": "application/json"
+          "content-type": "application/json",
+          "x-csrf-token": getCsrfTokenFromCookie()
         },
         body: JSON.stringify({ status: nextStatus, resolutionNote: dict["admin.ops.defaultResolutionNote"] })
       });

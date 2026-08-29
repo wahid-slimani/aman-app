@@ -10,7 +10,10 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:unit": "vitest run tests/unit",
-    "test:integration": "vitest run tests/integration"
+    "test:integration": "vitest run tests/integration",
+    "security:retention": "node scripts/release-hardening-check.mjs",
+    "security:migration-check": "node scripts/migration-safety-check.mjs",
+    "security:release-check": "npm run security:migration-check && npm run security:retention"
   },
   "dependencies": {
     "@node-rs/argon2": "2.0.2",

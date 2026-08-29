@@ -20,6 +20,11 @@ describe("nearbyQuerySchema", () => {
     const parsed = nearbyQuerySchema.safeParse({ latitude: 36.75, longitude: 3.05, radius: 15 });
     expect(parsed.success).toBe(false);
   });
+
+  it("rejects malformed coordinate input", () => {
+    const parsed = nearbyQuerySchema.safeParse({ latitude: "36.75", longitude: "3.05;DROP TABLE", radius: "20" });
+    expect(parsed.success).toBe(false);
+  });
 });
 
 describe("submitReportSchema", () => {
@@ -38,6 +43,15 @@ describe("submitReportSchema", () => {
       aidPointId: "cp1",
       reason: "x",
       details: "short"
+    });
+    expect(parsed.success).toBe(false);
+  });
+
+  it("rejects html/script-like payloads", () => {
+    const parsed = submitReportSchema.safeParse({
+      aidPointId: "cp1",
+      reason: "<script>alert(1)</script>",
+      details: "The listed phone does not connect and needs update."
     });
     expect(parsed.success).toBe(false);
   });

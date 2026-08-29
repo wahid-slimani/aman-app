@@ -1,6 +1,13 @@
 import { z } from "zod";
 import { ALLOWED_RADIUS_KM } from "@/lib/constants/app";
 
+const unsafePattern = /<|>|javascript:|onerror=|onload=/i;
+
+const safeText = (schema: z.ZodString) =>
+  schema.refine((value) => !unsafePattern.test(value), {
+    message: "validation.unsafeText"
+  });
+
 export const loginSchema = z.object({
   username: z.string().min(3).max(50),
   password: z.string().min(8).max(128)
@@ -16,41 +23,41 @@ export const nearbyQuerySchema = z.object({
 
 export const submitReportSchema = z.object({
   aidPointId: z.string().min(3).max(64),
-  reason: z.string().min(3).max(80),
-  details: z.string().min(10).max(2000),
-  reporterName: z.string().min(2).max(120).optional(),
+  reason: safeText(z.string().min(3).max(80)),
+  details: safeText(z.string().min(10).max(2000)),
+  reporterName: safeText(z.string().min(2).max(120)).optional(),
   reporterPhone: z.string().min(8).max(30).optional()
 });
 
 export const reportReviewSchema = z.object({
   status: z.enum(["UNDER_REVIEW", "RESOLVED", "DISMISSED"]),
-  resolutionNote: z.string().min(2).max(500).optional()
+  resolutionNote: safeText(z.string().min(2).max(500)).optional()
 });
 
 export const optimisticVersionSchema = z.object({
   expectedVersion: z.coerce.number().int().positive(),
   operationalStatus: z.enum(["OPEN", "TEMPORARILY_CLOSED", "FULL", "NEEDS_VERIFICATION"]).optional(),
-  verificationNote: z.string().min(2).max(500).optional()
+  verificationNote: safeText(z.string().min(2).max(500)).optional()
 });
 
 export const publicationReviewSchema = z.object({
   action: z.enum(["SUBMIT_REVIEW", "PUBLISH", "REJECT", "ARCHIVE"]),
-  note: z.string().min(2).max(500).optional()
+  note: safeText(z.string().min(2).max(500)).optional()
 });
 
 export const ownershipTransferSchema = z.object({
   newOrganiserId: z.string().min(3).max(64),
-  reason: z.string().min(2).max(500).optional()
+  reason: safeText(z.string().min(2).max(500)).optional()
 });
 
 export const rollbackSchema = z.object({
   datasetChangeId: z.string().min(3).max(64),
-  note: z.string().min(2).max(500).optional()
+  note: safeText(z.string().min(2).max(500)).optional()
 });
 
 export const publicationSubmitSchema = z.object({
   expectedVersion: z.coerce.number().int().positive(),
-  note: z.string().min(2).max(500).optional()
+  note: safeText(z.string().min(2).max(500)).optional()
 });
 
 export const verificationThresholdSchema = z

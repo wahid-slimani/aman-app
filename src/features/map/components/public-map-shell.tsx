@@ -68,6 +68,10 @@ export function PublicMapShell({ locale, dict }: Props) {
   }
 
   function onUseMyLocation() {
+    if (!window.confirm(dict["gps.consentPrompt"])) {
+      return;
+    }
+
     if (!navigator.geolocation) {
       setError(dict["gps.unsupported"]);
       return;
@@ -146,6 +150,7 @@ export function PublicMapShell({ locale, dict }: Props) {
               {dict["public.useMyLocation"]}
             </button>
           </div>
+          <p className="mt-2 text-xs text-slate-500">{dict["gps.consentHint"]}</p>
         </section>
 
         <section className="rounded-xl bg-white p-4 shadow-sm">

@@ -1,6 +1,6 @@
 # Active Phase Control
 
-Current phase: `PHASE_05_SECURITY_RELEASE_HARDENING`
+Current phase: `PHASE_06_FINAL_AUDIT_AND_LAUNCH_READINESS`
 
 Status:
 - state: READY_TO_START
