@@ -42,3 +42,9 @@ At session end, update:
 - open blockers
 - pending verification tasks
 - explicit next action
+- phase completion commit status (if gate passed)
+
+## Local dev environment policy
+
+- Follow `.github/engineering/local-development.md`.
+- Never store DB/JWT secrets in tracked repository files.

@@ -34,6 +34,7 @@ Strict hierarchy for all implementation work:
   - System, frontend, backend, database, API, auth/security, i18n, UI/UX rules.
 - `engineering/`
   - Coding standards, testing strategy, performance/operations, workflow and context rules.
+  - Includes local development and secret-handling guidance.
 - `phases/`
   - Ordered implementation phases with scope, tasks, dependencies, DoD, gate criteria.
   - Includes task tracker template and phase status log for no-skip execution evidence.
@@ -43,3 +44,8 @@ Strict hierarchy for all implementation work:
 ## Non-negotiable rule
 
 No requirement in `prd.md` may be removed, changed, skipped, or contradicted.
+
+## Local development and secrets
+
+- Local development DB credentials must be stored only in local untracked environment files.
+- See `.github/engineering/local-development.md` for dev setup policy.

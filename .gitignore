@@ -1,0 +1,22 @@
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# Node modules
+node_modules/
+
+# Build outputs
+.next/
+dist/
+out/
+
+# Logs
+*.log
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json

@@ -17,6 +17,7 @@
 6. Validate responsiveness, accessibility, localization, security constraints, and mandatory UI/UX skill usage.
 7. Complete phase verification template.
 8. Approve transition only if gate passes.
+9. Create a phase completion commit before switching active phase.
 
 ## Mandatory gate questions (all must pass)
 
@@ -37,6 +38,17 @@ If any gate check fails:
 - phase remains active
 - missing/failing items are listed as blockers
 - transition is forbidden
+
+## Phase-end commit policy (mandatory)
+
+- After a phase passes verification, create exactly one phase completion commit before updating to the next phase.
+- Commit must include:
+	- phase ID
+	- PRD references completed
+	- verification artifact path
+- Suggested commit format:
+	- `phase(<PHASE_ID>): complete and gate-approved`
+- Do not start next-phase implementation before this commit exists.
 
 ## Active-phase task tracking rule
 

@@ -18,4 +18,5 @@ Transition protocol:
 2. Complete `.github/verification/phase-verification-template.md` for current phase.
 3. Confirm task tracker has no unresolved non-approved tasks.
 4. Confirm no blockers remain.
-5. Update this file to next phase.
+5. Create the phase completion commit with phase ID + PRD refs + verification artifact path.
+6. Update this file to next phase.

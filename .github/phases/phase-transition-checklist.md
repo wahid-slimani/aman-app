@@ -14,6 +14,7 @@ Use when attempting to move from current phase to next phase.
 - [ ] Existing functionality still works.
 - [ ] Current phase Definition of Done satisfied.
 - [ ] Phase verification template completed.
+- [ ] Phase completion commit created with phase ID, PRD refs, and verification artifact path.
 
 ## Decision
 
