@@ -1,11 +1,11 @@
 # Active Phase Control
 
-Current phase: `PHASE_01_CORE_PLATFORM`
+Current phase: `PHASE_02_OPERATIONAL_QUALITY`
 
 Status:
-- state: NOT_STARTED
-- startedAt: TBD
-- completedAt: TBD
+- state: READY_TO_START
+- startedAt: 2026-08-29
+- completedAt: 2026-08-29
 
 Rules:
 - Only requirements assigned to current phase may be implemented.

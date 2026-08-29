@@ -21,6 +21,7 @@ Set locally (example names):
 - DATABASE_URL
 - JWT_ACCESS_SECRET
 - JWT_REFRESH_SECRET
+- NEXT_PUBLIC_MAPTILER_KEY
 
 Example local-only DATABASE_URL format:
 - postgresql://<username>:<password>@localhost:5432/aman
@@ -37,3 +38,8 @@ For your local machine, set `<username>` and `<password>` to your own local valu
 - Use Prisma for relational operations.
 - Use parameterized raw SQL through Prisma for PostGIS-specific operations.
 - Validate PostGIS extension support before Phase 01 implementation.
+
+## Development seed helper
+
+- A development-only helper endpoint exists at `/api/auth/dev-seed`.
+- It creates baseline local users for testing auth flows and is blocked in production.

@@ -1,0 +1,116 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ORGANISER
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+  DEACTIVATED
+}
+
+enum PublicationStatus {
+  DRAFT
+  PENDING_REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+enum OperationalStatus {
+  OPEN
+  TEMPORARILY_CLOSED
+  FULL
+  NEEDS_VERIFICATION
+}
+
+model User {
+  id             String           @id @default(cuid())
+  username       String           @unique
+  usernameNorm   String           @unique
+  passwordHash   String
+  role           UserRole
+  status         UserStatus       @default(ACTIVE)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  lastLoginAt    DateTime?
+  refreshSession RefreshSession[]
+  organiser      OrganiserProfile?
+}
+
+model RefreshSession {
+  id           String    @id @default(cuid())
+  userId       String
+  tokenHash    String
+  familyId     String
+  expiresAt    DateTime
+  createdAt    DateTime  @default(now())
+  revokedAt    DateTime?
+  replacedById String?
+  userAgent    String?
+  ipAddress    String?
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([familyId])
+}
+
+model OrganiserProfile {
+  id               String     @id @default(cuid())
+  userId           String     @unique
+  displayName      String
+  organisationName String?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  user             User       @relation(fields: [userId], references: [id], onDelete: Restrict)
+  aidPoints        AidPoint[]
+}
+
+model AidPoint {
+  id                 String            @id @default(cuid())
+  publicSlug         String            @unique
+  organiserId        String
+  publicationStatus  PublicationStatus @default(DRAFT)
+  operationalStatus  OperationalStatus @default(NEEDS_VERIFICATION)
+  latitude           Decimal           @db.Decimal(10, 7)
+  longitude          Decimal           @db.Decimal(10, 7)
+  location           Unsupported("geography(Point,4326)")
+  googleMapsUrl      String?
+  primaryPhone       String
+  secondaryPhone     String?
+  whatsappPhone      String?
+  lastVerifiedAt     DateTime?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  publishedAt        DateTime?
+  archivedAt         DateTime?
+  version            Int               @default(1)
+  organiser          OrganiserProfile  @relation(fields: [organiserId], references: [id], onDelete: Restrict)
+  translations       AidPointTranslation[]
+
+  @@index([organiserId])
+  @@index([publicationStatus, operationalStatus])
+}
+
+model AidPointTranslation {
+  id          String   @id @default(cuid())
+  aidPointId  String
+  locale      String
+  name        String
+  description String?
+  address     String
+  wilaya      String
+  commune     String
+  aidPoint    AidPoint @relation(fields: [aidPointId], references: [id], onDelete: Cascade)
+
+  @@unique([aidPointId, locale])
+  @@index([locale])
+}
