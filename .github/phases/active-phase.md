@@ -1,6 +1,6 @@
 # Active Phase Control
 
-Current phase: `PHASE_02_OPERATIONAL_QUALITY`
+Current phase: `PHASE_03_ANALYTICS`
 
 Status:
 - state: READY_TO_START

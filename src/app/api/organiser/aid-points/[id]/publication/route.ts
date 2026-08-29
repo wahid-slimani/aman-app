@@ -3,7 +3,8 @@ import { prisma } from "@/infrastructure/database/prisma";
 import { resolveLocale } from "@/lib/api/locale";
 import { apiError, apiSuccess } from "@/lib/api/response";
 import { requireRole } from "@/lib/security/authorization";
-import { optimisticVersionSchema } from "@/lib/validation/schemas";
+import { publicationSubmitSchema } from "@/lib/validation/schemas";
+import { checkPublicationPrerequisites } from "@/domain/operational-quality/workflows";
 
 type RouteContext = {
   params: Promise<{
@@ -11,7 +12,7 @@ type RouteContext = {
   }>;
 };
 
-export async function PATCH(request: NextRequest, context: RouteContext) {
+export async function POST(request: NextRequest, context: RouteContext) {
   const locale = resolveLocale(request.headers.get("accept-language"));
   const access = await requireRole(locale, "ORGANISER");
   if (!access.ok) {
@@ -19,10 +20,19 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
   }
 
   const params = await context.params;
+  const body = await request.json().catch(() => null);
+  const parsed = publicationSubmitSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return apiError({ code: "VALIDATION_FAILED", messageKey: "validation.invalidPayload", status: 400 }, locale);
+  }
 
   const organiser = await prisma.organiserProfile.findUnique({
     where: {
       userId: access.auth.sub
+    },
+    select: {
+      id: true
     }
   });
 
@@ -31,7 +41,12 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
   }
 
   const point = await prisma.aidPoint.findUnique({
-    where: { id: params.id }
+    where: {
+      id: params.id
+    },
+    include: {
+      translations: true
+    }
   });
 
   if (!point) {
@@ -42,11 +57,9 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     return apiError({ code: "AUTH_FORBIDDEN", messageKey: "auth.forbidden", status: 403 }, locale);
   }
 
-  const body = await request.json().catch(() => null);
-  const parsed = optimisticVersionSchema.safeParse(body);
-
-  if (!parsed.success || !parsed.data.operationalStatus) {
-    return apiError({ code: "VALIDATION_FAILED", messageKey: "validation.invalidPayload", status: 400 }, locale);
+  const prerequisites = checkPublicationPrerequisites(point);
+  if (!prerequisites.ok) {
+    return apiError({ code: "PUBLICATION_PREREQUISITES_MISSING", messageKey: "publication.prerequisitesMissing", status: 422 }, locale);
   }
 
   const updated = await prisma.$transaction(async (tx) => {
@@ -56,7 +69,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
         version: parsed.data.expectedVersion
       },
       data: {
-        operationalStatus: parsed.data.operationalStatus,
+        publicationStatus: "PENDING_REVIEW",
         version: {
           increment: 1
         }
@@ -71,7 +84,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       where: { id: point.id },
       select: {
         id: true,
-        operationalStatus: true,
+        publicationStatus: true,
         version: true
       }
     });
@@ -83,12 +96,12 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     await tx.auditLog.create({
       data: {
         actorUserId: access.auth.sub,
-        action: "AID_POINT_OPERATIONAL_STATUS_UPDATED",
+        action: "AID_POINT_SUBMITTED_FOR_REVIEW",
         entityType: "AidPoint",
         entityId: current.id,
         metadata: {
-          operationalStatus: current.operationalStatus,
-          version: current.version
+          version: current.version,
+          note: parsed.data.note
         }
       }
     });
@@ -100,9 +113,5 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     return apiError({ code: "VERSION_CONFLICT", messageKey: "common.versionConflict", status: 409 }, locale);
   }
 
-  return apiSuccess({
-    id: updated.id,
-    operationalStatus: updated.operationalStatus,
-    version: updated.version
-  });
+  return apiSuccess(updated);
 }

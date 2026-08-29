@@ -32,6 +32,22 @@ enum OperationalStatus {
   NEEDS_VERIFICATION
 }
 
+enum ReportStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED
+  DISMISSED
+}
+
+enum DatasetChangeAction {
+  PUBLISH
+  ARCHIVE
+  ROLLBACK
+  TRANSFER_OWNERSHIP
+  VERIFY
+  UPDATE_STATUS
+}
+
 model User {
   id             String           @id @default(cuid())
   username       String           @unique
@@ -44,6 +60,10 @@ model User {
   lastLoginAt    DateTime?
   refreshSession RefreshSession[]
   organiser      OrganiserProfile?
+  audits         AuditLog[]
+  reviewedReports AidPointReport[] @relation("ReportReviewer")
+  verifications   AidPointVerification[]
+  datasetVersions DatasetVersion[]
 }
 
 model RefreshSession {
@@ -95,6 +115,9 @@ model AidPoint {
   version            Int               @default(1)
   organiser          OrganiserProfile  @relation(fields: [organiserId], references: [id], onDelete: Restrict)
   translations       AidPointTranslation[]
+  reports            AidPointReport[]
+  verifications      AidPointVerification[]
+  datasetChanges     DatasetChange[]
 
   @@index([organiserId])
   @@index([publicationStatus, operationalStatus])
@@ -113,4 +136,85 @@ model AidPointTranslation {
 
   @@unique([aidPointId, locale])
   @@index([locale])
+}
+
+model AidPointReport {
+  id             String       @id @default(cuid())
+  aidPointId     String
+  reason         String
+  details        String
+  reporterName   String?
+  reporterPhone  String?
+  status         ReportStatus @default(OPEN)
+  reviewedAt     DateTime?
+  reviewedById   String?
+  resolutionNote String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  aidPoint       AidPoint     @relation(fields: [aidPointId], references: [id], onDelete: Cascade)
+  reviewedBy     User?        @relation("ReportReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([aidPointId, status])
+  @@index([createdAt])
+}
+
+model AidPointVerification {
+  id          String   @id @default(cuid())
+  aidPointId  String
+  actorUserId String
+  note        String?
+  createdAt   DateTime @default(now())
+  aidPoint    AidPoint @relation(fields: [aidPointId], references: [id], onDelete: Cascade)
+  actorUser   User     @relation(fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([aidPointId, createdAt])
+  @@index([actorUserId])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorUserId String?
+  action      String
+  entityType  String
+  entityId    String
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  actorUser   User?    @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId, createdAt])
+  @@index([actorUserId, createdAt])
+}
+
+model OperationalSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model DatasetVersion {
+  id          String          @id @default(cuid())
+  version     Int             @unique
+  createdById String?
+  note        String?
+  createdAt   DateTime        @default(now())
+  createdBy   User?           @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  changes     DatasetChange[]
+
+  @@index([createdAt])
+}
+
+model DatasetChange {
+  id               String              @id @default(cuid())
+  datasetVersionId String
+  aidPointId       String
+  action           DatasetChangeAction
+  publicationStatus PublicationStatus
+  operationalStatus OperationalStatus
+  snapshot         Json
+  createdAt        DateTime            @default(now())
+  datasetVersion   DatasetVersion      @relation(fields: [datasetVersionId], references: [id], onDelete: Cascade)
+  aidPoint         AidPoint            @relation(fields: [aidPointId], references: [id], onDelete: Cascade)
+
+  @@index([datasetVersionId])
+  @@index([aidPointId, createdAt])
 }

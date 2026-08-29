@@ -13,3 +13,52 @@ export const nearbyQuerySchema = z.object({
     message: "validation.invalidRadius"
   })
 });
+
+export const submitReportSchema = z.object({
+  aidPointId: z.string().min(3).max(64),
+  reason: z.string().min(3).max(80),
+  details: z.string().min(10).max(2000),
+  reporterName: z.string().min(2).max(120).optional(),
+  reporterPhone: z.string().min(8).max(30).optional()
+});
+
+export const reportReviewSchema = z.object({
+  status: z.enum(["UNDER_REVIEW", "RESOLVED", "DISMISSED"]),
+  resolutionNote: z.string().min(2).max(500).optional()
+});
+
+export const optimisticVersionSchema = z.object({
+  expectedVersion: z.coerce.number().int().positive(),
+  operationalStatus: z.enum(["OPEN", "TEMPORARILY_CLOSED", "FULL", "NEEDS_VERIFICATION"]).optional(),
+  verificationNote: z.string().min(2).max(500).optional()
+});
+
+export const publicationReviewSchema = z.object({
+  action: z.enum(["SUBMIT_REVIEW", "PUBLISH", "REJECT", "ARCHIVE"]),
+  note: z.string().min(2).max(500).optional()
+});
+
+export const ownershipTransferSchema = z.object({
+  newOrganiserId: z.string().min(3).max(64),
+  reason: z.string().min(2).max(500).optional()
+});
+
+export const rollbackSchema = z.object({
+  datasetChangeId: z.string().min(3).max(64),
+  note: z.string().min(2).max(500).optional()
+});
+
+export const publicationSubmitSchema = z.object({
+  expectedVersion: z.coerce.number().int().positive(),
+  note: z.string().min(2).max(500).optional()
+});
+
+export const verificationThresholdSchema = z
+  .object({
+    staleDays: z.coerce.number().int().min(1).max(365),
+    criticalDays: z.coerce.number().int().min(1).max(730)
+  })
+  .refine((value) => value.criticalDays >= value.staleDays, {
+    message: "validation.invalidThresholds",
+    path: ["criticalDays"]
+  });

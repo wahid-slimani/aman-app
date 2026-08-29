@@ -11,7 +11,7 @@ type RouteContext = {
   }>;
 };
 
-export async function PATCH(request: NextRequest, context: RouteContext) {
+export async function POST(request: NextRequest, context: RouteContext) {
   const locale = resolveLocale(request.headers.get("accept-language"));
   const access = await requireRole(locale, "ORGANISER");
   if (!access.ok) {
@@ -19,10 +19,19 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
   }
 
   const params = await context.params;
+  const body = await request.json().catch(() => null);
+  const parsed = optimisticVersionSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return apiError({ code: "VALIDATION_FAILED", messageKey: "validation.invalidPayload", status: 400 }, locale);
+  }
 
   const organiser = await prisma.organiserProfile.findUnique({
     where: {
       userId: access.auth.sub
+    },
+    select: {
+      id: true
     }
   });
 
@@ -31,7 +40,13 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
   }
 
   const point = await prisma.aidPoint.findUnique({
-    where: { id: params.id }
+    where: {
+      id: params.id
+    },
+    select: {
+      id: true,
+      organiserId: true
+    }
   });
 
   if (!point) {
@@ -42,21 +57,15 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     return apiError({ code: "AUTH_FORBIDDEN", messageKey: "auth.forbidden", status: 403 }, locale);
   }
 
-  const body = await request.json().catch(() => null);
-  const parsed = optimisticVersionSchema.safeParse(body);
-
-  if (!parsed.success || !parsed.data.operationalStatus) {
-    return apiError({ code: "VALIDATION_FAILED", messageKey: "validation.invalidPayload", status: 400 }, locale);
-  }
-
-  const updated = await prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const updateResult = await tx.aidPoint.updateMany({
       where: {
         id: point.id,
         version: parsed.data.expectedVersion
       },
       data: {
-        operationalStatus: parsed.data.operationalStatus,
+        lastVerifiedAt: new Date(),
+        operationalStatus: "OPEN",
         version: {
           increment: 1
         }
@@ -67,42 +76,47 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       return null;
     }
 
-    const current = await tx.aidPoint.findUnique({
-      where: { id: point.id },
-      select: {
-        id: true,
-        operationalStatus: true,
-        version: true
+    const verification = await tx.aidPointVerification.create({
+      data: {
+        aidPointId: point.id,
+        actorUserId: access.auth.sub,
+        note: parsed.data.verificationNote
       }
     });
 
-    if (!current) {
+    const updated = await tx.aidPoint.findUnique({
+      where: { id: point.id },
+      select: {
+        id: true,
+        version: true,
+        lastVerifiedAt: true,
+        operationalStatus: true
+      }
+    });
+
+    if (!updated) {
       return null;
     }
 
     await tx.auditLog.create({
       data: {
         actorUserId: access.auth.sub,
-        action: "AID_POINT_OPERATIONAL_STATUS_UPDATED",
+        action: "AID_POINT_VERIFIED",
         entityType: "AidPoint",
-        entityId: current.id,
+        entityId: updated.id,
         metadata: {
-          operationalStatus: current.operationalStatus,
-          version: current.version
+          verificationId: verification.id,
+          version: updated.version
         }
       }
     });
 
-    return current;
+    return updated;
   });
 
-  if (!updated) {
+  if (!result) {
     return apiError({ code: "VERSION_CONFLICT", messageKey: "common.versionConflict", status: 409 }, locale);
   }
 
-  return apiSuccess({
-    id: updated.id,
-    operationalStatus: updated.operationalStatus,
-    version: updated.version
-  });
+  return apiSuccess(result);
 }

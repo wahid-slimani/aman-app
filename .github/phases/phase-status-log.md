@@ -16,6 +16,10 @@ Purpose: auditable timeline of phase progression decisions.
 | 2026-08-29 | PHASE_01_CORE_PLATFORM | Milestone | Baseline Next.js scaffold, locale middleware, Prisma schema draft, and initial API routes created with lint/typecheck pass | .github/verification/phase-01-verification.md |
 | 2026-08-29 | PHASE_01_CORE_PLATFORM | Completed | Core platform baseline implemented and gate-approved after migration, lint, typecheck, tests, and build pass | .github/verification/phase-01-verification.md |
 | 2026-08-29 | PHASE_02_OPERATIONAL_QUALITY | Ready To Start | Active phase pointer moved to Phase 02 after Phase 01 completion | .github/phases/active-phase.md |
+| 2026-08-29 | PHASE_02_OPERATIONAL_QUALITY | Started | Operational quality backend foundation started: reports workflow, verification history, concurrency safeguards, and audit model updates | .github/verification/phase-02-verification.md |
+| 2026-08-29 | PHASE_02_OPERATIONAL_QUALITY | Milestone | Added dataset versioning, publication/rollback/transfer flows, threshold settings, and admin-organiser operational dashboards with green quality gates | .github/verification/phase-02-verification.md |
+| 2026-08-29 | PHASE_02_OPERATIONAL_QUALITY | Completed | Operational quality requirements delivered with passing migration, lint, typecheck, tests, and build gates | .github/verification/phase-02-verification.md |
+| 2026-08-29 | PHASE_03_ANALYTICS | Ready To Start | Active phase pointer moved to Phase 03 after Phase 02 completion | .github/phases/active-phase.md |
 
 ## Rules
 
