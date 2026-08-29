@@ -16,13 +16,13 @@ Source of truth:
 
 | Phase | Assigned PRD coverage | Status | Verification artifact |
 | --- | --- | --- | --- |
-| P0 | 102-104, 143-145, 251 | NOT_STARTED | pending |
-| P1 | see traceability matrix | NOT_STARTED | pending |
-| P2 | see traceability matrix | NOT_STARTED | pending |
-| P3 | see traceability matrix | NOT_STARTED | pending |
-| P4 | see traceability matrix | NOT_STARTED | pending |
-| P5 | see traceability matrix | NOT_STARTED | pending |
-| P6 | 257-269 + final audit closure | NOT_STARTED | pending |
+| P0 | 102-104, 143-145, 251 | COMPLETED | .github/verification/phase-00-verification.md |
+| P1 | see traceability matrix | COMPLETED | .github/verification/phase-01-verification.md |
+| P2 | see traceability matrix | COMPLETED | .github/verification/phase-02-verification.md |
+| P3 | see traceability matrix | COMPLETED | .github/verification/phase-03-verification.md |
+| P4 | see traceability matrix | COMPLETED | .github/verification/phase-04-verification.md |
+| P5 | see traceability matrix | COMPLETED | .github/verification/phase-05-verification.md |
+| P6 | 257-269 + final audit closure | COMPLETED | .github/verification/phase-06-verification.md |
 
 ## Rule
 
