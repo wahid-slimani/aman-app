@@ -1,13 +1,14 @@
 import { getDictionary } from "@/i18n/dictionaries";
-import { DEFAULT_LOCALE } from "@/i18n/config";
 import { OrganiserOpsPanel } from "@/features/operational-quality/components/organiser-ops-panel";
 import { getRequestAuth } from "@/lib/security/request-auth";
 import { prisma } from "@/infrastructure/database/prisma";
 import { classifyVerificationFreshness } from "@/domain/operational-quality/freshness";
 import { getVerificationThresholdSettings } from "@/domain/operational-quality/settings";
+import { getRequestLocale } from "@/lib/i18n/request-locale";
 
 export default async function OrganiserOverviewPage() {
-  const dict = getDictionary(DEFAULT_LOCALE);
+  const locale = await getRequestLocale();
+  const dict = getDictionary(locale);
   const auth = await getRequestAuth();
   const thresholds = await getVerificationThresholdSettings();
 
@@ -72,8 +73,8 @@ export default async function OrganiserOverviewPage() {
   return (
     <main className="min-h-dvh bg-slate-100 p-4 md:p-6">
       <section className="mx-auto w-full max-w-7xl space-y-4">
-        <header className="rounded-2xl bg-white p-5 shadow-sm">
-          <h1 className="text-xl font-semibold text-slate-900">{dict["organiser.ops.title"]}</h1>
+        <header className="rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm">
+          <h1 className="text-xl font-semibold text-emerald-800">{dict["organiser.ops.title"]}</h1>
           <p className="mt-1 text-sm text-slate-600">{dict["organiser.ops.subtitle"]}</p>
         </header>
         <OrganiserOpsPanel dict={dict} initialPoints={initialPoints} />

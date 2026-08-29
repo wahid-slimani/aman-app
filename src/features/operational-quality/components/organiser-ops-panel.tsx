@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { getCsrfTokenFromCookie } from "@/lib/security/csrf-client";
+import { authenticatedFetch } from "@/lib/api/authenticated-fetch";
+import { explainApiError } from "@/lib/api/client-error";
 
 type Dict = Record<string, string>;
 
@@ -14,6 +15,15 @@ type OwnPoint = {
   version: number;
   freshness: "FRESH" | "STALE" | "CRITICAL" | "UNKNOWN";
   openReports: number;
+};
+
+type ApiPayload = {
+  success: boolean;
+  error?: {
+    message?: string;
+    code?: string;
+    details?: Array<string | { code?: string; message?: string }>;
+  };
 };
 
 export function OrganiserOpsPanel({
@@ -35,7 +45,7 @@ export function OrganiserOpsPanel({
     }
 
     try {
-      const response = await fetch("/api/organiser/aid-points", { cache: "no-store" });
+      const response = await authenticatedFetch("/api/organiser/aid-points", { cache: "no-store" });
       const payload = (await response.json()) as {
         success: boolean;
         data?: OwnPoint[];
@@ -63,11 +73,10 @@ export function OrganiserOpsPanel({
     setBusyId(point.id);
     setError("");
     try {
-      const response = await fetch(`/api/organiser/aid-points/${point.id}/verify`, {
+      const response = await authenticatedFetch(`/api/organiser/aid-points/${point.id}/verify`, {
         method: "POST",
         headers: {
-          "content-type": "application/json",
-          "x-csrf-token": getCsrfTokenFromCookie()
+          "content-type": "application/json"
         },
         body: JSON.stringify({
           expectedVersion: point.version,
@@ -75,13 +84,10 @@ export function OrganiserOpsPanel({
         })
       });
 
-      const payload = (await response.json()) as {
-        success: boolean;
-        error?: { message: string; code?: string };
-      };
+      const payload = (await response.json()) as ApiPayload;
 
       if (!payload.success) {
-        throw new Error(payload.error?.message ?? dict["common.error"]);
+        throw new Error(explainApiError(payload.error, dict["common.error"]));
       }
 
       await loadPoints(false);
@@ -96,11 +102,10 @@ export function OrganiserOpsPanel({
     setBusyId(point.id);
     setError("");
     try {
-      const response = await fetch(`/api/organiser/aid-points/${point.id}/publication`, {
+      const response = await authenticatedFetch(`/api/organiser/aid-points/${point.id}/publication`, {
         method: "POST",
         headers: {
-          "content-type": "application/json",
-          "x-csrf-token": getCsrfTokenFromCookie()
+          "content-type": "application/json"
         },
         body: JSON.stringify({
           expectedVersion: point.version,
@@ -108,13 +113,10 @@ export function OrganiserOpsPanel({
         })
       });
 
-      const payload = (await response.json()) as {
-        success: boolean;
-        error?: { message: string; code?: string };
-      };
+      const payload = (await response.json()) as ApiPayload;
 
       if (!payload.success) {
-        throw new Error(payload.error?.message ?? dict["common.error"]);
+        throw new Error(explainApiError(payload.error, dict["common.error"]));
       }
 
       await loadPoints(false);

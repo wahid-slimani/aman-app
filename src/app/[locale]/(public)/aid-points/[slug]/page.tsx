@@ -103,6 +103,14 @@ export default async function AidPointSeoPage({ params }: AidPointPageProps) {
           <p className="mt-1 text-sm text-slate-600">{translation.wilaya} - {translation.commune}</p>
         </header>
         <p className="text-sm text-slate-700">{translation.description ?? translation.address}</p>
+        <div className="flex flex-wrap gap-3 text-sm">
+          <a className="font-semibold text-[#006233] underline" href={`/${resolved.locale}`}>
+            {dict["nav.home"]}
+          </a>
+          <a className="font-semibold text-[#006233] underline" href={`/${resolved.locale}/report-issue`}>
+            {dict["nav.reportIssue"]}
+          </a>
+        </div>
         <dl className="grid gap-3 text-sm sm:grid-cols-2">
           <div>
             <dt className="font-medium text-slate-900">{dict["public.address"]}</dt>
@@ -128,6 +136,12 @@ export default async function AidPointSeoPage({ params }: AidPointPageProps) {
               </a>
             </dd>
           </div>
+          {translation.neededItems ? (
+            <div className="sm:col-span-2">
+              <dt className="font-medium text-slate-900">{dict["aidPoint.form.neededItems"]}</dt>
+              <dd className="whitespace-pre-line text-slate-700">{translation.neededItems}</dd>
+            </div>
+          ) : null}
         </dl>
       </section>
       <script

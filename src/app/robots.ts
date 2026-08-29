@@ -7,7 +7,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: ["/", "/ar-DZ", "/fr-DZ", "/tzm-DZ", "/ar-DZ/aid-points/", "/fr-DZ/aid-points/", "/tzm-DZ/aid-points/"],
-        disallow: ["/admin", "/organiser", "/api/"]
+        disallow: ["/admin", "/organiser", "/portal", "/api/"]
       }
     ],
     sitemap: `${getBaseUrl()}/sitemap.xml`,

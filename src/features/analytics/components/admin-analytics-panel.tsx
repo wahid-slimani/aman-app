@@ -1,5 +1,6 @@
 type AdminAnalyticsPanelProps = {
   dict: Record<string, string>;
+  locale: string;
   activeRange: string;
   snapshot: {
     kpis: {
@@ -20,7 +21,7 @@ type AdminAnalyticsPanelProps = {
 
 const RANGES = ["today", "7d", "30d", "90d"] as const;
 
-export function AdminAnalyticsPanel({ dict, activeRange, snapshot }: AdminAnalyticsPanelProps) {
+export function AdminAnalyticsPanel({ dict, locale, activeRange, snapshot }: AdminAnalyticsPanelProps) {
   return (
     <section className="space-y-4">
       <div className="rounded-2xl bg-white p-5 shadow-sm">
@@ -28,7 +29,7 @@ export function AdminAnalyticsPanel({ dict, activeRange, snapshot }: AdminAnalyt
           {RANGES.map((range) => (
             <a
               key={range}
-              href={`/admin/analytics?range=${range}`}
+              href={`/${locale}/admin/analytics?range=${range}`}
               className={`rounded-full px-4 py-2 text-sm ${
                 activeRange === range ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-700"
               }`}

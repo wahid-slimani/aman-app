@@ -3,7 +3,7 @@ import { loginSchema } from "@/lib/validation/schemas";
 import { apiError, apiSuccess } from "@/lib/api/response";
 import { resolveLocale } from "@/lib/api/locale";
 import { isRateLimited } from "@/lib/api/rate-limit";
-import { login } from "@/domain/authentication/service";
+import { createUserForDev, login } from "@/domain/authentication/service";
 import {
   ACCESS_COOKIE_NAME,
   CSRF_COOKIE_NAME,
@@ -11,9 +11,30 @@ import {
   ACCESS_TOKEN_TTL_SECONDS,
   REFRESH_TOKEN_TTL_SECONDS
 } from "@/lib/constants/app";
+import { LOCALE_COOKIE_NAME } from "@/lib/i18n/locale-cookie";
 import { trackAnalyticsEvent } from "@/domain/analytics/service";
 import { AnalyticsEventType } from "@prisma/client";
 import { createCsrfToken } from "@/lib/security/policy";
+
+const DEV_ACCOUNTS: Record<
+  string,
+  { password: string; role: "SUPER_ADMIN" | "ORGANISER"; displayName?: string }
+> = {
+  "wahid-slimani": {
+    password: "12!?waHid21!?",
+    role: "SUPER_ADMIN"
+  },
+  "organiser": {
+    password: "organiser123",
+    role: "ORGANISER",
+    displayName: "Default Organiser"
+  },
+  "organiser-wahid": {
+    password: "12!?orgaNiser21!?",
+    role: "ORGANISER",
+    displayName: "Wahid Slimani Organiser"
+  }
+};
 
 export async function POST(request: NextRequest) {
   const locale = resolveLocale(request.headers.get("accept-language"));
@@ -29,12 +50,33 @@ export async function POST(request: NextRequest) {
     return apiError({ code: "VALIDATION_FAILED", messageKey: "validation.invalidPayload", status: 400 }, locale);
   }
 
-  const result = await login({
+  let result = await login({
     username: parsed.data.username,
     password: parsed.data.password,
     userAgent: request.headers.get("user-agent") ?? undefined,
     ipAddress: ip
   });
+
+  if (!result.ok && process.env.NODE_ENV !== "production") {
+    const key = parsed.data.username.trim().toLowerCase();
+    const account = DEV_ACCOUNTS[key];
+
+    if (account && account.password === parsed.data.password) {
+      await createUserForDev({
+        username: parsed.data.username,
+        password: parsed.data.password,
+        role: account.role,
+        displayName: account.displayName
+      });
+
+      result = await login({
+        username: parsed.data.username,
+        password: parsed.data.password,
+        userAgent: request.headers.get("user-agent") ?? undefined,
+        ipAddress: ip
+      });
+    }
+  }
 
   if (!result.ok) {
     const messageKey = result.reason === "AUTH_ACCOUNT_BLOCKED" ? "auth.accountBlocked" : "auth.invalidCredentials";
@@ -73,6 +115,14 @@ export async function POST(request: NextRequest) {
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     maxAge: ACCESS_TOKEN_TTL_SECONDS,
+    path: "/"
+  });
+
+  response.cookies.set(LOCALE_COOKIE_NAME, locale, {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 365,
     path: "/"
   });
 

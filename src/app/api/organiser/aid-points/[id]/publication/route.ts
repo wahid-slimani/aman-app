@@ -4,14 +4,23 @@ import { resolveLocale } from "@/lib/api/locale";
 import { apiError, apiSuccess } from "@/lib/api/response";
 import { requireRole } from "@/lib/security/authorization";
 import { publicationSubmitSchema } from "@/lib/validation/schemas";
-import { checkPublicationPrerequisites } from "@/domain/operational-quality/workflows";
+import { checkPublicationPrerequisites, type PublicationPrerequisiteCode } from "@/domain/operational-quality/workflows";
 import { trackAnalyticsEvent } from "@/domain/analytics/service";
 import { AnalyticsEventType } from "@prisma/client";
+import { t } from "@/lib/api/messages";
 
 type RouteContext = {
   params: Promise<{
     id: string;
   }>;
+};
+
+const PREREQUISITE_MESSAGE_KEYS: Record<PublicationPrerequisiteCode, string> = {
+  MISSING_OWNER: "publication.prerequisite.MISSING_OWNER",
+  MISSING_PRIMARY_PHONE: "publication.prerequisite.MISSING_PRIMARY_PHONE",
+  MISSING_VERIFICATION: "publication.prerequisite.MISSING_VERIFICATION",
+  INVALID_OPERATIONAL_STATUS: "publication.prerequisite.INVALID_OPERATIONAL_STATUS",
+  MISSING_TRANSLATIONS: "publication.prerequisite.MISSING_TRANSLATIONS"
 };
 
 export async function POST(request: NextRequest, context: RouteContext) {
@@ -61,7 +70,20 @@ export async function POST(request: NextRequest, context: RouteContext) {
 
   const prerequisites = checkPublicationPrerequisites(point);
   if (!prerequisites.ok) {
-    return apiError({ code: "PUBLICATION_PREREQUISITES_MISSING", messageKey: "publication.prerequisitesMissing", status: 422 }, locale);
+    const details = prerequisites.missing.map((code) => ({
+      code,
+      message: t(locale, PREREQUISITE_MESSAGE_KEYS[code])
+    }));
+
+    return apiError(
+      {
+        code: "PUBLICATION_PREREQUISITES_MISSING",
+        messageKey: "publication.prerequisitesMissing",
+        status: 422,
+        details
+      },
+      locale
+    );
   }
 
   const updated = await prisma.$transaction(async (tx) => {

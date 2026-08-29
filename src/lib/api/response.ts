@@ -7,6 +7,7 @@ type ApiError = {
   code: string;
   messageKey: string;
   status: number;
+  details?: unknown;
 };
 
 export function apiSuccess<T>(data: T, requestId = createRequestId()) {
@@ -18,13 +19,23 @@ export function apiSuccess<T>(data: T, requestId = createRequestId()) {
 }
 
 export function apiError(error: ApiError, locale: AppLocale, requestId = createRequestId()) {
+  const errorPayload: {
+    code: string;
+    message: string;
+    details?: unknown;
+  } = {
+    code: error.code,
+    message: t(locale, error.messageKey)
+  };
+
+  if (error.details !== undefined) {
+    errorPayload.details = error.details;
+  }
+
   return NextResponse.json(
     {
       success: false,
-      error: {
-        code: error.code,
-        message: t(locale, error.messageKey)
-      },
+      error: errorPayload,
       requestId
     },
     { status: error.status }

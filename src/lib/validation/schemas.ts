@@ -21,6 +21,10 @@ export const nearbyQuerySchema = z.object({
   })
 });
 
+export const geocodeQuerySchema = z.object({
+  q: safeText(z.string().trim().min(2).max(120))
+});
+
 export const submitReportSchema = z.object({
   aidPointId: z.string().min(3).max(64),
   reason: safeText(z.string().min(3).max(80)),
@@ -84,4 +88,33 @@ export const analyticsRangeSchema = z.object({
   range: z.enum(["today", "7d", "30d", "90d", "custom"]).default("30d"),
   start: z.string().optional(),
   end: z.string().optional()
+});
+
+const translationSchema = z.object({
+  locale: z.enum(["ar-DZ", "fr-DZ", "tzm-DZ"]),
+  name: safeText(z.string().min(2).max(200)),
+  address: safeText(z.string().min(2).max(300)),
+  wilaya: safeText(z.string().min(2).max(100)),
+  commune: safeText(z.string().min(2).max(100)),
+  description: safeText(z.string().max(1000)).optional(),
+  neededItems: safeText(z.string().max(1000)).optional()
+});
+
+export const createAidPointSchema = z.object({
+  publicSlug: z.string().min(3).max(80).regex(/^[a-z0-9-]+$/),
+  primaryPhone: safeText(z.string().min(8).max(30)),
+  secondaryPhone: safeText(z.string().min(8).max(30)).optional(),
+  whatsappPhone: safeText(z.string().min(8).max(30)).optional(),
+  googleMapsUrl: z.string().url().max(500).optional(),
+  latitude: z.coerce.number().min(-90).max(90),
+  longitude: z.coerce.number().min(-180).max(180),
+  translations: z.array(translationSchema).min(1).max(3)
+});
+
+export const updateAidPointSchema = createAidPointSchema.extend({
+  expectedVersion: z.coerce.number().int().positive()
+});
+
+export const resetPasswordSchema = z.object({
+  newPassword: z.string().min(8).max(128)
 });

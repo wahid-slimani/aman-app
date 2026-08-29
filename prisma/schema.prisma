@@ -143,6 +143,7 @@ model AidPointTranslation {
   locale      String
   name        String
   description String?
+  neededItems String?
   address     String
   wilaya      String
   commune     String

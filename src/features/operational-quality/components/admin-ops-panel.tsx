@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { getCsrfTokenFromCookie } from "@/lib/security/csrf-client";
+import { authenticatedFetch } from "@/lib/api/authenticated-fetch";
 
 type Dict = Record<string, string>;
 
@@ -47,8 +47,8 @@ export function AdminOpsPanel({
 
     try {
       const [thresholdRes, reportRes] = await Promise.all([
-        fetch("/api/admin/settings/verification-thresholds", { cache: "no-store" }),
-        fetch("/api/admin/reports?status=OPEN", { cache: "no-store" })
+        authenticatedFetch("/api/admin/settings/verification-thresholds", { cache: "no-store" }),
+        authenticatedFetch("/api/admin/reports?status=OPEN", { cache: "no-store" })
       ]);
 
       const thresholdPayload = (await thresholdRes.json()) as {
@@ -91,11 +91,10 @@ export function AdminOpsPanel({
     setError("");
 
     try {
-      const response = await fetch("/api/admin/settings/verification-thresholds", {
+      const response = await authenticatedFetch("/api/admin/settings/verification-thresholds", {
         method: "PATCH",
         headers: {
-          "content-type": "application/json",
-          "x-csrf-token": getCsrfTokenFromCookie()
+          "content-type": "application/json"
         },
         body: JSON.stringify(thresholds)
       });
@@ -128,11 +127,10 @@ export function AdminOpsPanel({
     setError("");
 
     try {
-      const response = await fetch(`/api/admin/reports/${reportId}`, {
+      const response = await authenticatedFetch(`/api/admin/reports/${reportId}`, {
         method: "PATCH",
         headers: {
-          "content-type": "application/json",
-          "x-csrf-token": getCsrfTokenFromCookie()
+          "content-type": "application/json"
         },
         body: JSON.stringify({ status: nextStatus, resolutionNote: dict["admin.ops.defaultResolutionNote"] })
       });

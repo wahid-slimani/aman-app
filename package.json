@@ -13,6 +13,7 @@
     "test:integration": "vitest run tests/integration",
     "test:e2e": "vitest run tests/e2e",
     "test:perf": "vitest run tests/performance",
+    "seed:test-places": "node scripts/seed-test-places.mjs",
     "security:retention": "node scripts/release-hardening-check.mjs",
     "security:migration-check": "node scripts/migration-safety-check.mjs",
     "security:release-check": "npm run security:migration-check && npm run security:retention"

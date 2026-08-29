@@ -4,6 +4,9 @@
 
 :root {
   color-scheme: light;
+  --brand-green: #006233;
+  --brand-red: #d21034;
+  --brand-soft: #f7f9f7;
 }
 
 html,
@@ -11,4 +14,6 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100%;
+  background: var(--brand-soft);
+  color: #0f172a;
 }

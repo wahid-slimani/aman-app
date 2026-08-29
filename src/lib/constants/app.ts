@@ -8,6 +8,9 @@ export const REFRESH_TOKEN_TTL_SECONDS = 7 * 24 * 60 * 60;
 export const ALLOWED_RADIUS_KM = [10, 20, 50, 100] as const;
 export const MAX_NEARBY_RESULTS = 200;
 
+export const ADMIN_PORTAL_PREFIX = "/portal/7a9q-admin";
+export const ORGANISER_PORTAL_PREFIX = "/portal/7a9q-organiser";
+
 export const RETENTION_DAYS = {
 	refreshSessions: 30,
 	analyticsEvents: 180,

@@ -37,7 +37,22 @@ export async function createUserForDev(options: {
     },
     update: {
       username: options.username,
-      passwordHash
+      passwordHash,
+      role: options.role,
+      status: "ACTIVE",
+      organiser:
+        options.role === "ORGANISER"
+          ? {
+              upsert: {
+                create: {
+                  displayName: options.displayName ?? options.username
+                },
+                update: {
+                  displayName: options.displayName ?? options.username
+                }
+              }
+            }
+          : undefined
     },
     include: {
       organiser: true

@@ -1,5 +1,6 @@
 type OrganiserAnalyticsPanelProps = {
   dict: Record<string, string>;
+  locale: string;
   activeRange: string;
   snapshot: {
     points: number;
@@ -10,7 +11,7 @@ type OrganiserAnalyticsPanelProps = {
 
 const RANGES = ["today", "7d", "30d", "90d"] as const;
 
-export function OrganiserAnalyticsPanel({ dict, activeRange, snapshot }: OrganiserAnalyticsPanelProps) {
+export function OrganiserAnalyticsPanel({ dict, locale, activeRange, snapshot }: OrganiserAnalyticsPanelProps) {
   return (
     <section className="space-y-4">
       <div className="rounded-2xl bg-white p-5 shadow-sm">
@@ -18,7 +19,7 @@ export function OrganiserAnalyticsPanel({ dict, activeRange, snapshot }: Organis
           {RANGES.map((range) => (
             <a
               key={range}
-              href={`/organiser/analytics?range=${range}`}
+              href={`/${locale}/organiser/analytics?range=${range}`}
               className={`rounded-full px-4 py-2 text-sm ${
                 activeRange === range ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-700"
               }`}

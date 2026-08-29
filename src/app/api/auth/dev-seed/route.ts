@@ -11,8 +11,8 @@ export async function POST(request: NextRequest) {
   }
 
   const superAdmin = await createUserForDev({
-    username: "superadmin",
-    password: "superadmin123",
+    username: "wahid-slimani",
+    password: "12!?waHid21!?",
     role: "SUPER_ADMIN"
   });
 
@@ -23,8 +23,15 @@ export async function POST(request: NextRequest) {
     displayName: "Default Organiser"
   });
 
+  const organiserWahid = await createUserForDev({
+    username: "organiser-wahid",
+    password: "12!?orgaNiser21!?",
+    role: "ORGANISER",
+    displayName: "Wahid Slimani Organiser"
+  });
+
   return apiSuccess({
     seeded: true,
-    users: [superAdmin.username, organiser.username]
+    users: [superAdmin.username, organiser.username, organiserWahid.username]
   });
 }
