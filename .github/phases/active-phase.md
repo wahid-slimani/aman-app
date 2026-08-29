@@ -1,6 +1,6 @@
 # Active Phase Control
 
-Current phase: `PHASE_00_TECHNICAL_VALIDATION`
+Current phase: `PHASE_01_CORE_PLATFORM`
 
 Status:
 - state: NOT_STARTED
